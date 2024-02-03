@@ -95,7 +95,7 @@ app.post('/cadastrar_posts', (req, res) => {
     db.query(query, [titulo, conteudo, usuario, data], (err, results) => {
         if (err) throw err;
 
-        if (results.length > 0) {
+        if (results.affectedRows > 0) {
             console.log('Cadastro de postagem OK')
             res.redirect('/dashboard');
         } else {
