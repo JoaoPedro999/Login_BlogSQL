@@ -64,16 +64,19 @@ app.get('/about', (req, res) => {
     res.render('pages/about', { req: req, posts: dados});
 });
 
+
+
 app.get('/posts', (req, res) => {
-
-    const dados = [
-        {titulo: "Post1", conteudo: "Conteudo post1"},
-        {titulo: "Post2", conteudo: "Conteudo post2"},
-        {titulo: "Post3", conteudo: "Conteudo post3"}
-];
-    res.render('pages/pgposts', { req: req, posts: dados});
-});
-
+    db.query('SELECT * FROM posts', (err, results) => {
+      if (err) {
+        console.error('Erro na consulta SQL:', err);
+        return res.status(500).send('Erro interno. <a href="/posts">Tente novamente</a>');
+      }
+      console.log(results);
+      res.render('pages/pgposts', { req:req, posts: results });  
+    });
+  });
+  
 
 app.get('/post_failed', (req, res) => {
     res.render('pages/post_failed', { req: req })
