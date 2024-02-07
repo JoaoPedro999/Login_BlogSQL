@@ -61,7 +61,13 @@ app.get('/login', (req, res) => {
 
 
 app.get('/about', (req, res) => {
-    res.render('pages/about', { req: req })
+
+    const dados = [
+        {titulo: "Post1", conteudo: "Conteudo post1"},
+        {titulo: "Post2", conteudo: "Conteudo post2"},
+        {titulo: "Post3", conteudo: "Conteudo post3"}
+];
+    res.render('pages/about', { req: req, posts: dados});
 });
 
 app.get('/post_failed', (req, res) => {
