@@ -12,6 +12,27 @@ const db = mysql.createConnection({
     database: 'mydb',
 });
 
+const USER_TYPES = {
+    ADMIN: 'Administrador',
+  };
+  function checkUserTypeMiddleware(allowedUserTypes) {
+    return function (req, res, next) {
+        const userType = getUserTypeFromSession(); 
+        if (allowedUserTypes.includes(userType)) {
+            next();
+        } else {
+            res.status(403).send('Acesso proibido'); 
+        }
+    };
+}
+
+function getUserTypeFromSession(req) {
+    // Implemente a lógica real para obter o tipo de usuário da sessão
+    // Exemplo: return req.session.userType;
+    return 'Administrador'; // Substitua isso com a lógica real
+}
+
+
 db.connect((err) => {
     if (err) {
         console.error('Erro ao conectar ao banco de dados:', err);
@@ -106,7 +127,7 @@ app.get('/postlist', (req, res) => {
     });
 });
 
-app.get('/postlistadm', (req, res) => {
+app.get('/postlistadm',checkUserTypeMiddleware([USER_TYPES.ADMIN]), (req, res) => {
     // Remove the line that gets the user ID from the session
     // const userId = req.session.username;
 
