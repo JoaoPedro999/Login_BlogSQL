@@ -61,22 +61,61 @@ app.get('/login', (req, res) => {
 
 
 app.get('/about', (req, res) => {
-    res.render('pages/about', { req: req, posts: dados});
+    res.render('pages/about', { req: req, posts: dados });
 });
 
 
 
 app.get('/posts', (req, res) => {
     db.query('SELECT * FROM posts', (err, results) => {
-      if (err) {
-        console.error('Erro na consulta SQL:', err);
-        return res.status(500).send('Erro interno. <a href="/posts">Tente novamente</a>');
-      }
-      console.log(results);
-      res.render('pages/pgposts', { req:req, posts: results });  
+        if (err) {
+            console.error('Erro na consulta SQL:', err);
+            return res.status(500).send('Erro interno. <a href="/posts">Tente novamente</a>');
+        }
+        console.log(results);
+        res.render('pages/pgposts', { req: req, posts: results });
     });
-  });
-  
+});
+
+
+
+app.get('/postlist', (req, res) => {
+    const userId = req.session.username;
+
+    // db.query('SELECT * FROM posts WHERE usuario = ?', [userId], (err, result) => {
+    db.query('SELECT * FROM posts WHERE usuario = ?', [userId], (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Erro interno do servidor');
+            return;
+        }
+
+        // Renderizar a página e passar 'name' para o EJS
+        res.render('pages/postlist', { posts: result, usuario: req.session.name, req: req });
+    });
+});
+
+
+//excluir post
+app.delete('/excluirPost/:postId', (req, res) => {
+    const postId = req.params.postId;
+    
+    db.query('DELETE FROM posts WHERE id = ?', [postId], (err, result) => {
+        if (err) {
+            console.error('Erro ao excluir post:', err);
+            res.status(500).send('Erro interno do servidor');
+            return;
+        }
+
+        // Adicione o console.log para registrar a exclusão do post
+        console.log(`Post com ID ${postId} excluído com sucesso.`);
+
+        res.sendStatus(200);
+    });
+});
+
+
+
 
 app.get('/post_failed', (req, res) => {
     res.render('pages/post_failed', { req: req })
@@ -106,7 +145,7 @@ app.post('/login', (req, res) => {
 // Rota para processar o formulário de caastro depostagem
 app.post('/cadastrar_posts', (req, res) => {
     const { titulo, conteudo } = req.body;
-    const usuario = "admin";
+    const usuario = req.session.username;
     const data = new Date();
     const dia = String(data.getDate()).padStart(2, '0');
     const mes = String(data.getMonth() + 1).padStart(2, '0'); // Os meses começam do zero, por isso adicionamos 1.
@@ -114,7 +153,7 @@ app.post('/cadastrar_posts', (req, res) => {
 
     const dataFormatada = `${dia}/${mes}/${ano}`;
 
-console.log(dataFormatada);
+    console.log(dataFormatada);
     // const query = 'SELECT * FROM users WHERE username = ? AND password = SHA1(?)';
     const query = 'INSERT INTO posts (titulo, conteudo, usuario, data) VALUES (?, ?, ?, ?)';
 
@@ -131,33 +170,15 @@ console.log(dataFormatada);
     });
 });
 
-// const query = 'INSERT INTO users (username, password) VALUES (?, SHA1(?))';
-// console.log(`POST /CADASTAR -> query -> ${query}`);
-// db.query(query, [username, password], (err, results) => {
-//     console.log(results);
-//     //console.log(`POST /CADASTAR -> results -> ${results}`);
-
-//     if (err) {
-//         console.log(`ERRO NO CADASTRO: ${err}`);
-//         throw err;
-//     }
-//     if (results.affectedRows > 0) {
-//         req.session.loggedin = true;
-//         req.session.username = username;
-//         res.redirect('/register_ok');
-//     }
-// });
-
-
 // Rota para a página cadastro do post
 app.get('/cadastrar_posts', (req, res) => {
-    if(req.session.loggedin) {
+    if (req.session.loggedin) {
         res.render('pages/cadastrar_posts', { req: req });
     }
-    else{
+    else {
         res.redirect('/login_failed');
     }
-    
+
 });
 
 // Rotas para cadastrar
