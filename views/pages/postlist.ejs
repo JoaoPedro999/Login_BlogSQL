@@ -35,7 +35,7 @@
                             <td><%= post.data %></td>
                             <td><%= post.usuario %></td>
                             <td>
-                                <button onclick="excluirPost('<%= post.id %>')">Excluir</button>
+                               <a href="/excluirpost/ <%= post.id %>"> excluir post</a>
                             </td>
                         </tr>
                     <% }); %>

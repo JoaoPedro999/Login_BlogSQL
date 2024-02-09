@@ -97,10 +97,10 @@ app.get('/postlist', (req, res) => {
 
 
 //excluir post
-app.delete('/excluirPost/:postId', (req, res) => {
-    const postId = req.params.postId;
+app.get('/excluirPost/:id', (req, res) => {
+    const id = req.params.id;
     
-    db.query('DELETE FROM posts WHERE id = ?', [postId], (err, result) => {
+    db.query('DELETE FROM posts WHERE id = ?', [id], (err, result) => {
         if (err) {
             console.error('Erro ao excluir post:', err);
             res.status(500).send('Erro interno do servidor');
@@ -108,9 +108,9 @@ app.delete('/excluirPost/:postId', (req, res) => {
         }
 
         // Adicione o console.log para registrar a exclusão do post
-        console.log(`Post com ID ${postId} excluído com sucesso.`);
+        console.log(`Post com ID ${id} excluído com sucesso.`);
 
-        res.sendStatus(200);
+        res.redirect('/postlist');
     });
 });
 
