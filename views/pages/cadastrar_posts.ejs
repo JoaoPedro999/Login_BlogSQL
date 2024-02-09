@@ -26,7 +26,7 @@
                     </div>
                     <div class="form-group">
                         <div><label for="conteudo">Conteúdo da postagem</label></div>
-                        <div> <input type="text" id="conteudo" name="conteudo" required class="form-control"></div>
+                        <div> <textarea id="conteudo" name="conteudo"></textarea></div>
                     </div>
                     <!-- TODO: Implementar um campo para verificar na página se as senhas coincidem -->
                     <div><button type="submit" class="form-control btn btn-dark">Inserir nova postagem</button></div>
@@ -41,5 +41,9 @@
     </footer>
 
 </body>
-
+<style>
+    .conteudo{
+    width: 100%;
+    }
+</style>
 </html>
