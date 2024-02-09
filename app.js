@@ -108,6 +108,13 @@ app.post('/cadastrar_posts', (req, res) => {
     const { titulo, conteudo } = req.body;
     const usuario = "admin";
     const data = new Date();
+    const dia = String(data.getDate()).padStart(2, '0');
+    const mes = String(data.getMonth() + 1).padStart(2, '0'); // Os meses começam do zero, por isso adicionamos 1.
+    const ano = data.getFullYear();
+
+    const dataFormatada = `${dia}/${mes}/${ano}`;
+
+console.log(dataFormatada);
     // const query = 'SELECT * FROM users WHERE username = ? AND password = SHA1(?)';
     const query = 'INSERT INTO posts (titulo, conteudo, usuario, data) VALUES (?, ?, ?, ?)';
 
