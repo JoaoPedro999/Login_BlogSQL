@@ -106,6 +106,48 @@ app.get('/postlist', (req, res) => {
     });
 });
 
+app.get('/postlistadm', (req, res) => {
+    // Remove the line that gets the user ID from the session
+    // const userId = req.session.username;
+
+    // Consultar o banco de dados para obter o número total de postagens
+    db.query('SELECT COUNT(*) as postCount FROM posts', (errCount, resultCount) => {
+        if (errCount) {
+            console.error(errCount);
+            res.status(500).send('Erro interno do servidor');
+            return;
+        }
+
+        const postCount = resultCount[0].postCount;
+
+        // Consultar o banco de dados para obter a lista de todas as postagens
+        db.query('SELECT * FROM posts', (err, result) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send('Erro interno do servidor');
+                return;
+            }
+
+            // Renderizar a página e passar 'name', 'postCount', e 'posts' para o EJS
+            res.render('pages/postlistadm', { usuario: req.session.name, postCount, posts: result, req: req });
+        });
+    });
+});
+
+app.post('/excluirtodaspostagens', (req, res) => {
+    // Adicione lógica para excluir todas as postagens do banco de dados
+    db.query('DELETE FROM posts', (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Erro interno do servidor');
+            return;
+        }
+
+        // Envie uma resposta indicando que a exclusão foi bem-sucedida
+        res.status(200).send('Todas as postagens foram excluídas com sucesso.');
+    });
+});
+
 
 //excluir post
 app.get('/excluirPost/:id', (req, res) => {
