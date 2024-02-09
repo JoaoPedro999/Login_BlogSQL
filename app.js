@@ -82,16 +82,27 @@ app.get('/posts', (req, res) => {
 app.get('/postlist', (req, res) => {
     const userId = req.session.username;
 
-    // db.query('SELECT * FROM posts WHERE usuario = ?', [userId], (err, result) => {
-    db.query('SELECT * FROM posts WHERE usuario = ?', [userId], (err, result) => {
-        if (err) {
-            console.error(err);
+    // Consultar o banco de dados para obter o número total de postagens do usuário
+    db.query('SELECT COUNT(*) as postCount FROM posts WHERE usuario = ?', [userId], (errCount, resultCount) => {
+        if (errCount) {
+            console.error(errCount);
             res.status(500).send('Erro interno do servidor');
             return;
         }
 
-        // Renderizar a página e passar 'name' para o EJS
-        res.render('pages/postlist', { posts: result, usuario: req.session.name, req: req });
+        const postCount = resultCount[0].postCount;
+
+        // Consultar o banco de dados para obter a lista de postagens do usuário
+        db.query('SELECT * FROM posts WHERE usuario = ?', [userId], (err, result) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send('Erro interno do servidor');
+                return;
+            }
+
+            // Renderizar a página e passar 'name', 'postCount', e 'posts' para o EJS
+            res.render('pages/postlist', { usuario: req.session.name, postCount, posts: result, req: req });
+        });
     });
 });
 
@@ -112,6 +123,7 @@ app.get('/excluirPost/:id', (req, res) => {
 
         res.redirect('/postlist');
     });
+
 });
 
 
